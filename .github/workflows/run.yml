@@ -43,17 +43,6 @@ jobs:
           mkdir -p ./publish/
           cd ./publish || exit 1
 
-      - name: Create and Upload Release
-        id: upload_release
-        uses: svenstaro/upload-release-action@v2
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          release_name: Release ${{ env.BUILDTIME }}
-          tag: latest
-          file_glob: true
-          overwrite: true
-          file: ./publish/*
-
       - name: Git push assets to "sing-rule" branch
         run: |
           cd sing-rule || exit 1
