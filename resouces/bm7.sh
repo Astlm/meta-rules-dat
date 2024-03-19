@@ -10,8 +10,17 @@ if [ ! -d rule ]; then
     rm -rf .git
 fi
 
-# 移动文件到指定目录
+# 定义需要保留的文件列表
+declare -a keep_files=("ChinaMax.yaml" "TelegramUS.yaml" "Gemini.yaml" "OpenAI.yaml" "Claude.yaml" "Telegram.yaml" "Proxy.yaml" "GlobalMedia.yaml" "Global.yaml" "Microsoft.yaml" "Apple.yaml")
+
+# 移动文件到 Clash 目录，并删除不在列表中的文件
 find ./rule/Clash/ -type f -name "*.yaml" -exec mv {} ./rule/Clash/ \;
+cd ./rule/Clash/
+ls *.yaml | while read filename; do
+    if [[ ! " ${keep_files[@]} " =~ " ${filename} " ]]; then
+        rm -f "$filename"
+    fi
+done
 
 # 处理规则文件
 for yaml_file in ./rule/Clash/*.yaml; do
