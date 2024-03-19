@@ -1,33 +1,37 @@
 #!/bin/bash
 
-# 定义规则文件的存放目录
-rule_dir="rule/Clash"
-
-# 如果目录不存在，则创建目录
-if [ ! -d "$rule_dir" ]; then
-    mkdir -p "$rule_dir"
+# 拉文件
+if [ ! -d rule ]; then
+	git init
+	git remote add origin https://github.com/blackmatrix7/ios_rule_script.git
+	git config core.sparsecheckout true
+	echo "rule/Clash" >>.git/info/sparse-checkout
+	git pull --depth 1 origin master
+	rm -rf .git
 fi
+# 移动文件/目录到同一文件夹
+list=($(find ./rule/Clash/ | awk -F '/' '{print $5}' | sed '/^$/d' | grep -v '\.' | sort -u))
+for ((i = 0; i < ${#list[@]}; i++)); do
+	path=$(find ./rule/Clash/ -name ${list[i]})
+	mv $path ./rule/Clash/
+done
 
-# 定义需要下载的规则文件链接
-declare -a urls=(
-"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple_Classical.yaml"
-"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy_Classical.yaml"
-"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Global/Global_Classical.yaml"
-"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GlobalMedia/GlobalMedia_Classical.yaml"
-"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMax/ChinaMax_Classical.yaml"
-"https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Clash/Rule/OpenAI.yaml"
-"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml"
-"https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Rule/TelegramALL.list"
-"https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Rule/TelegramUS.list"
-"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Gemini/Gemini.yaml"
-"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml"
-)
+list=($(ls ./rule/Clash/))
+for ((i = 0; i < ${#list[@]}; i++)); do
+	if [ -z "$(ls ./rule/Clash/${list[i]} | grep '.yaml')" ]; then
+		directory=($(ls ./rule/Clash/${list[i]}))
+		for ((x = 0; x < ${#directory[@]}; x++)); do
+			mv ./rule/Clash/${list[i]}/${directory[x]} ./rule/Clash/${directory[x]}
+		done
+		rm -r ./rule/Clash/${list[i]}
+	fi
+done
 
-# 下载规则文件
-for url in "${urls[@]}"; do
-    filename=$(basename "$url")
-    # 使用curl命令下载文件
-    curl -L "$url" -o "${rule_dir}/${filename}"
+list=($(ls ./rule/Clash/))
+for ((i = 0; i < ${#list[@]}; i++)); do
+	if [ -f "./rule/Clash/${list[i]}/${list[i]}_Classical.yaml" ]; then
+		mv ./rule/Clash/${list[i]}/${list[i]}_Classical.yaml ./rule/Clash/${list[i]}/${list[i]}.yaml
+	fi
 done
 
 # 处理文件
