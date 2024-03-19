@@ -81,3 +81,4 @@ for yaml_file in "$rule_dir"/*.yaml; do
         fi
         rm -f temp_ipcidr.json
     fi
+done
