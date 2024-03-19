@@ -18,11 +18,6 @@ jobs:
           echo "BUILDTIME=$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M')" >> $GITHUB_ENV
         shell: bash
 
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: MetaCubeX/meta-rules-dat
-
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
@@ -37,11 +32,6 @@ jobs:
           ls
           chmod 755 bm7.sh && ./bm7.sh
           rm -r bm7.sh sing-box* rule
-
-      - name: Move and zip files
-        run: |
-          mkdir -p ./publish/
-          cd ./publish || exit 1
 
       - name: Git push assets to "sing-rule" branch
         run: |
