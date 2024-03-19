@@ -34,9 +34,35 @@ done
 for yaml_file in "$rule_dir"/*.yaml; do
     base_name=$(basename "$yaml_file" .yaml)
 
-    # 检查文件是否包含域名相关规则
+    # 检查文件是否包含域名相关规则并进行处理
     if grep -qE 'DOMAIN(-SUFFIX|-KEYWORD)?,|DOMAIN,' "$yaml_file"; then
-        # 之前讨论的处理域名规则的逻辑
+        echo "Processing domain rules for $yaml_file..."
+        
+        # 创建一个新的JSON文件
+        json_file="${base_name}_domain.json"
+        echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\n      \"domain_suffix\": [],\n      \"domain_keyword\": [],\n      \"domain\": []\n    }\n  ]\n}" > "$json_file"
+        
+        while IFS= read -r line; do
+            # 处理不同类型的域名规则
+            if [[ "$line" =~ DOMAIN-SUFFIX,(.*) ]]; then
+                domain="${BASH_REMATCH[1]}"
+                # 使用sed命令将域名添加到对应的数组中
+                sed -i "/\"domain_suffix\": \[/a\        \"$domain\"," "$json_file"
+            elif [[ "$line" =~ DOMAIN-KEYWORD,(.*) ]]; then
+                keyword="${BASH_REMATCH[1]}"
+                # 使用sed命令将关键词添加到对应的数组中
+                sed -i "/\"domain_keyword\": \[/a\        \"$keyword\"," "$json_file"
+            elif [[ "$line" =~ DOMAIN,(.*) ]]; then
+                domain_exact="${BASH_REMATCH[1]}"
+                # 使用sed命令将准确的域名添加到对应的数组中
+                sed -i "/\"domain\": \[/a\        \"$domain_exact\"," "$json_file"
+            fi
+        done < "$yaml_file"
+        
+        echo "Processed domain rules for $yaml_file."
+        
+    else
+        echo "No domain rules found in $yaml_file. Skipping..."
     fi
 
     # 生成针对 Android 包名和进程名的 JSON
