@@ -36,7 +36,6 @@ for yaml_file in "$rule_dir"/*.yaml; do
 
     # 检查文件是否包含域名相关规则并进行处理
     if grep -qE 'DOMAIN(-SUFFIX|-KEYWORD)?,|DOMAIN,' "$yaml_file"; then
-        echo "Processing domain rules for $yaml_file..."
         
         # 创建一个新的JSON文件
         json_file="${base_name}_domain.json"
@@ -59,10 +58,6 @@ for yaml_file in "$rule_dir"/*.yaml; do
             fi
         done < "$yaml_file"
         
-        echo "Processed domain rules for $yaml_file."
-        
-    else
-        echo "No domain rules found in $yaml_file. Skipping..."
     fi
 
     # 生成针对 Android 包名和进程名的 JSON
