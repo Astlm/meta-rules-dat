@@ -31,8 +31,28 @@ for url in "${urls[@]}"; do
 done
 
 # 处理规则文件
-for yaml_file in ./rule/Clash/*.yaml; do
+for yaml_file in "$rule_dir"/*.yaml; do
     base_name=$(basename "$yaml_file" .yaml)
+
+    # 初始化JSON结构
+    echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\n      \"domain_suffix\": [],\n      \"domain_keyword\": [],\n      \"domain\": []\n    }\n  ]\n}" > "${base_name}_domain.json"
+    
+    # 分析并处理每个规则
+    while IFS= read -r line; do
+        if [[ "$line" =~ DOMAIN-SUFFIX,(.*) ]]; then
+            # 处理 DOMAIN-SUFFIX
+            domain_suffix="${BASH_REMATCH[1]}"
+            jq --arg domain_suffix "$domain_suffix" '.rules[0].domain_suffix += [$domain_suffix]' "${base_name}_domain.json" > "temp_${base_name}_domain.json" && mv "temp_${base_name}_domain.json" "${base_name}_domain.json"
+        elif [[ "$line" =~ DOMAIN-KEYWORD,(.*) ]]; then
+            # 处理 DOMAIN-KEYWORD
+            domain_keyword="${BASH_REMATCH[1]}"
+            jq --arg domain_keyword "$domain_keyword" '.rules[0].domain_keyword += [$domain_keyword]' "${base_name}_domain.json" > "temp_${base_name}_domain.json" && mv "temp_${base_name}_domain.json" "${base_name}_domain.json"
+        elif [[ "$line" =~ DOMAIN,(.*) ]]; then
+            # 处理 DOMAIN
+            domain="${BASH_REMATCH[1]}"
+            jq --arg domain "$domain" '.rules[0].domain += [$domain]' "${base_name}_domain.json" > "temp_${base_name}_domain.json" && mv "temp_${base_name}_domain.json" "${base_name}_domain.json"
+        fi
+    done < "$yaml_file"
 
     # 生成针对 Android 包名和进程名的 JSON
     grep -E 'PROCESS-NAME' "$yaml_file" | grep -v '#' | sed 's/  - PROCESS-NAME,//g' > temp.json
@@ -43,17 +63,7 @@ for yaml_file in ./rule/Clash/*.yaml; do
         ./sing-box rule-set compile "${base_name}_process.json" -o "${base_name}_process.srs"
     fi
     rm -f temp.json
-
-    # 生成针对域名的 JSON
-    grep -E 'DOMAIN(-SUFFIX|-KEYWORD)?,' "$yaml_file" | grep -v '#' | sed -E 's/  - DOMAIN(-SUFFIX|-KEYWORD)?,//g' > temp.json
-    if [ -s temp.json ]; then
-        echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\"domain\": [" > "${base_name}_domain.json"
-        sed 's/^/        "/;s/$/",/' temp.json >> "${base_name}_domain.json"
-        echo -e "      ]}\n  ]\n}" >> "${base_name}_domain.json"
-        ./sing-box rule-set compile "${base_name}_domain.json" -o "${base_name}_domain.srs"
-    fi
-    rm -f temp.json
-
+    
     # 生成针对 IP CIDR 的 JSON
     grep 'IP-CIDR,' "$yaml_file" | grep -v '#' | sed 's/  - IP-CIDR,//g' > temp.json
     if [ -s temp.json ]; then
@@ -63,4 +73,5 @@ for yaml_file in ./rule/Clash/*.yaml; do
         ./sing-box rule-set compile "${base_name}_ipcidr.json" -o "${base_name}_ipcidr.srs"
     fi
     rm -f temp.json
+    
 done
