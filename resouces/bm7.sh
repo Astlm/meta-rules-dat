@@ -30,45 +30,79 @@ for url in "${urls[@]}"; do
     curl -L "$url" -o "${rule_dir}/${filename}"
 done
 
-# 处理规则文件
-for yaml_file in "$rule_dir"/*.yaml; do
-    base_name=$(basename "$yaml_file" .yaml)
-        
-    # 创建一个新的JSON文件
-    json_file="${base_name}_domain.json"
-    echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\n      \"domain_suffix\": [],\n      \"domain_keyword\": [],\n      \"domain\": []\n    }\n  ]\n}" > "$json_file"
-
-    # 使用grep提取并处理域名相关规则，然后将结果直接插入到JSON文件中
-    domain_suffixes=$(grep -oE 'DOMAIN-SUFFIX,([^,]+)' "$yaml_file" | cut -d',' -f2 | awk '{print "        \"" $0 "\","}' | sed '$ s/,$//')
-    domain_keywords=$(grep -oE 'DOMAIN-KEYWORD,([^,]+)' "$yaml_file" | cut -d',' -f2 | awk '{print "        \"" $0 "\","}' | sed '$ s/,$//')
-    domains=$(grep -oE 'DOMAIN,([^,]+)' "$yaml_file" | cut -d',' -f2 | awk '{print "        \"" $0 "\","}' | sed '$ s/,$//')
-
-    if [[ -n $domain_suffixes || -n $domain_keywords || -n $domains ]]; then
-        # 插入提取的规则到JSON
-        sed -i "/\"domain_suffix\": \[/a\ $domain_suffixes" "$json_file"
-        sed -i "/\"domain_keyword\": \[/a\ $domain_keywords" "$json_file"
-        sed -i "/\"domain\": \[/a\ $domains" "$json_file"
-    fi
-
-    # 生成针对 Android 包名和进程名的 JSON
-    if grep -q 'PROCESS-NAME,' "$yaml_file"; then
-        grep -E 'PROCESS-NAME' "$yaml_file" | grep -v '#' | sed 's/  - PROCESS-NAME,//g' > temp_process.json
-        if [ -s temp_process.json ]; then
-            echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\"process_name\": [" > "${base_name}_process.json"
-            sed 's/^/        "/;s/$/",/' temp_process.json >> "${base_name}_process.json"
-            echo -e "      ]}\n  ]\n}" >> "${base_name}_process.json"
-        fi
-        rm -f temp_process.json
-    fi
-
-    # 生成针对 IP CIDR 的 JSON
-    if grep -q 'IP-CIDR,' "$yaml_file"; then
-        grep 'IP-CIDR,' "$yaml_file" | grep -v '#' | sed 's/  - IP-CIDR,//g' > temp_ipcidr.json
-        if [ -s temp_ipcidr.json ]; then
-            echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\"ip_cidr\": [" > "${base_name}_ipcidr.json"
-            sed 's/^/        "/;s/$/",/' temp_ipcidr.json >> "${base_name}_ipcidr.json"
-            echo -e "      ]}\n  ]\n}" >> "${base_name}_ipcidr.json"
-        fi
-        rm -f temp_ipcidr.json
-    fi
-done
+# 处理文件
+list=($(ls ./rule/Clash/))
+for ((i = 0; i < ${#list[@]}; i++)); do
+	mkdir -p ${list[i]}
+	# 归类
+	# android package
+	if [ -n "$(cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep PROCESS | grep -v '\.exe' | grep -v '/' | grep '\.')" ]; then
+		cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' |  grep PROCESS | grep -v '\.exe' | grep -v '/' | grep '\.' | sed 's/  - PROCESS-NAME,//g' > ${list[i]}/package.json
+	fi
+	# process name
+	if [ -n "$(cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep PROCESS | grep -v '/' | grep -v '\.')" ]; then
+		cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep -v '#' | grep PROCESS | grep -v '/' | grep -v '\.' | sed 's/  - PROCESS-NAME,//g' > ${list[i]}/process.json
+	fi
+	if [ -n "$(cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep PROCESS |  grep '\.exe')" ]; then
+		cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep -v '#' | grep PROCESS |  grep '\.exe' | sed 's/  - PROCESS-NAME,//g' >> ${list[i]}/process.json
+	fi
+	# domain
+	if [ -n "$(cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep '\- DOMAIN-SUFFIX,')" ]; then
+		cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep '\- DOMAIN-SUFFIX,' | sed 's/  - DOMAIN-SUFFIX,//g' > ${list[i]}/domain.json
+		cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep '\- DOMAIN-SUFFIX,' | sed 's/  - DOMAIN-SUFFIX,/./g' > ${list[i]}/suffix.json
+	fi
+	if [ -n "$(cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep '\- DOMAIN,')" ]; then
+		cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep '\- DOMAIN,' | sed 's/  - DOMAIN,//g' >> ${list[i]}/domain.json
+	fi
+	if [ -n "$(cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep '\- DOMAIN-KEYWORD,')" ]; then
+		cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep '\- DOMAIN-KEYWORD,' | sed 's/  - DOMAIN-KEYWORD,//g' > ${list[i]}/keyword.json
+	fi
+	# ipcidr
+	if [ -n "$(cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep '\- IP-CIDR')" ]; then
+		cat ./rule/Clash/${list[i]}/${list[i]}.yaml | grep -v '#' | grep '\- IP-CIDR' | sed 's/  - IP-CIDR,//g' | sed 's/  - IP-CIDR6,//g' > ${list[i]}/ipcidr.json
+	fi
+	# 转成json格式
+	# android package
+	if [ -f "${list[i]}/package.json" ]; then
+		sed -i 's/^/        "/g' ${list[i]}/package.json
+		sed -i 's/$/",/g' ${list[i]}/package.json
+		sed -i '1s/^/      "package_name": [\n/g' ${list[i]}/package.json
+		sed -i '$ s/,$/\n      ],/g' ${list[i]}/package.json
+	fi
+	# process name
+	if [ -f "${list[i]}/process.json" ]; then
+		sed -i 's/^/        "/g' ${list[i]}/process.json
+		sed -i 's/$/",/g' ${list[i]}/process.json
+		sed -i '1s/^/      "process_name": [\n/g' ${list[i]}/process.json
+		sed -i '$ s/,$/\n      ],/g' ${list[i]}/process.json
+	fi
+	# domain
+	if [ -f "${list[i]}/domain.json" ]; then
+		sed -i 's/^/        "/g' ${list[i]}/domain.json
+		sed -i 's/$/",/g' ${list[i]}/domain.json
+		sed -i '1s/^/      "domain": [\n/g' ${list[i]}/domain.json
+		sed -i '$ s/,$/\n      ],/g' ${list[i]}/domain.json
+	fi
+	if [ -f "${list[i]}/suffix.json" ]; then
+		sed -i 's/^/        "/g' ${list[i]}/suffix.json
+		sed -i 's/$/",/g' ${list[i]}/suffix.json
+		sed -i '1s/^/      "domain_suffix": [\n/g' ${list[i]}/suffix.json
+		sed -i '$ s/,$/\n      ],/g' ${list[i]}/suffix.json
+	fi
+	if [ -f "${list[i]}/keyword.json" ]; then
+		sed -i 's/^/        "/g' ${list[i]}/keyword.json
+		sed -i 's/$/",/g' ${list[i]}/keyword.json
+		sed -i '1s/^/      "domain_keyword": [\n/g' ${list[i]}/keyword.json
+		sed -i '$ s/,$/\n      ],/g' ${list[i]}/keyword.json
+	fi
+	# ipcidr
+	if [ -f "${list[i]}/ipcidr.json" ]; then
+		sed -i 's/^/        "/g' ${list[i]}/ipcidr.json
+		sed -i 's/$/",/g' ${list[i]}/ipcidr.json
+		sed -i '1s/^/      "ip_cidr": [\n/g' ${list[i]}/ipcidr.json
+		sed -i '$ s/,$/\n      ],/g' ${list[i]}/ipcidr.json
+	fi
+	# 合并文件
+	if [ -f "${list[i]}/package.json" -a -f "${list[i]}/process.json" ]; then
+		mv ${list[i]}/package.json ${list[i]}.json
+		sed -i
