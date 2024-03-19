@@ -1,25 +1,33 @@
 #!/bin/bash
 
-# 拉取规则文件
-if [ ! -d rule ]; then
-    git init
-    git remote add origin https://github.com/blackmatrix7/ios_rule_script.git
-    git config core.sparsecheckout true
-    echo "rule/Clash" >> .git/info/sparse-checkout
-    git pull --depth 1 origin master
-    rm -rf .git
+# 定义规则文件的存放目录
+rule_dir="rule/Clash"
+
+# 如果目录不存在，则创建目录
+if [ ! -d "$rule_dir" ]; then
+    mkdir -p "$rule_dir"
 fi
 
-# 定义需要保留的文件列表
-declare -a keep_files=("ChinaMax.yaml" "TelegramUS.yaml" "Gemini.yaml" "OpenAI.yaml" "Claude.yaml" "Telegram.yaml" "Proxy.yaml" "GlobalMedia.yaml" "Global.yaml" "Microsoft.yaml" "Apple.yaml")
+# 定义需要下载的规则文件链接
+declare -a urls=(
+"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple_Classical.yaml"
+"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Proxy/Proxy_Classical.yaml"
+"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Global/Global_Classical.yaml"
+"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GlobalMedia/GlobalMedia_Classical.yaml"
+"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ChinaMax/ChinaMax_Classical.yaml"
+"https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Clash/Rule/OpenAI.yaml"
+"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml"
+"https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Rule/TelegramALL.list"
+"https://gitlab.com/lodepuly/vpn_tool/-/raw/master/Tool/Loon/Rule/TelegramUS.list"
+"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Gemini/Gemini.yaml"
+"https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml"
+)
 
-# 移动文件到 Clash 目录，并删除不在列表中的文件
-find ./rule/Clash/ -type f -name "*.yaml" -exec mv {} ./rule/Clash/ \;
-cd ./rule/Clash/
-ls *.yaml | while read filename; do
-    if [[ ! " ${keep_files[@]} " =~ " ${filename} " ]]; then
-        rm -f "$filename"
-    fi
+# 下载规则文件
+for url in "${urls[@]}"; do
+    filename=$(basename "$url")
+    # 使用curl命令下载文件
+    curl -L "$url" -o "${rule_dir}/${filename}"
 done
 
 # 处理规则文件
