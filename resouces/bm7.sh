@@ -33,31 +33,21 @@ done
 # 处理规则文件
 for yaml_file in "$rule_dir"/*.yaml; do
     base_name=$(basename "$yaml_file" .yaml)
+        
+    # 创建一个新的JSON文件
+    json_file="${base_name}_domain.json"
+    echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\n      \"domain_suffix\": [],\n      \"domain_keyword\": [],\n      \"domain\": []\n    }\n  ]\n}" > "$json_file"
 
-    # 检查文件是否包含域名相关规则并进行处理
-    if grep -qE 'DOMAIN(-SUFFIX|-KEYWORD)?,|DOMAIN,' "$yaml_file"; then
-        
-        # 创建一个新的JSON文件
-        json_file="${base_name}_domain.json"
-        echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\n      \"domain_suffix\": [],\n      \"domain_keyword\": [],\n      \"domain\": []\n    }\n  ]\n}" > "$json_file"
-        
-        while IFS= read -r line; do
-            # 处理不同类型的域名规则
-            if [[ "$line" =~ DOMAIN-SUFFIX,(.*) ]]; then
-                domain="${BASH_REMATCH[1]}"
-                # 使用sed命令将域名添加到对应的数组中
-                sed -i "/\"domain_suffix\": \[/a\        \"$domain\"," "$json_file"
-            elif [[ "$line" =~ DOMAIN-KEYWORD,(.*) ]]; then
-                keyword="${BASH_REMATCH[1]}"
-                # 使用sed命令将关键词添加到对应的数组中
-                sed -i "/\"domain_keyword\": \[/a\        \"$keyword\"," "$json_file"
-            elif [[ "$line" =~ DOMAIN,(.*) ]]; then
-                domain_exact="${BASH_REMATCH[1]}"
-                # 使用sed命令将准确的域名添加到对应的数组中
-                sed -i "/\"domain\": \[/a\        \"$domain_exact\"," "$json_file"
-            fi
-        done < "$yaml_file"
-        
+    # 使用grep提取并处理域名相关规则，然后将结果直接插入到JSON文件中
+    domain_suffixes=$(grep -oE 'DOMAIN-SUFFIX,([^,]+)' "$yaml_file" | cut -d',' -f2 | awk '{print "        \"" $0 "\","}' | sed '$ s/,$//')
+    domain_keywords=$(grep -oE 'DOMAIN-KEYWORD,([^,]+)' "$yaml_file" | cut -d',' -f2 | awk '{print "        \"" $0 "\","}' | sed '$ s/,$//')
+    domains=$(grep -oE 'DOMAIN,([^,]+)' "$yaml_file" | cut -d',' -f2 | awk '{print "        \"" $0 "\","}' | sed '$ s/,$//')
+
+    if [[ -n $domain_suffixes || -n $domain_keywords || -n $domains ]]; then
+        # 插入提取的规则到JSON
+        sed -i "/\"domain_suffix\": \[/a\ $domain_suffixes" "$json_file"
+        sed -i "/\"domain_keyword\": \[/a\ $domain_keywords" "$json_file"
+        sed -i "/\"domain\": \[/a\ $domains" "$json_file"
     fi
 
     # 生成针对 Android 包名和进程名的 JSON
