@@ -30,29 +30,26 @@ for url in "${urls[@]}"; do
     curl -L "$url" -o "${rule_dir}/${filename}"
 done
 
+# 初始化临时文件，用于收集JSON规则
+temp_json="temp_rules.json"
+
 # 处理规则文件
 for yaml_file in "$rule_dir"/*.yaml; do
     base_name=$(basename "$yaml_file" .yaml)
-
-    # 初始化JSON结构
-    echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\n      \"domain_suffix\": [],\n      \"domain_keyword\": [],\n      \"domain\": []\n    }\n  ]\n}" > "${base_name}_domain.json"
     
-    # 分析并处理每个规则
-    while IFS= read -r line; do
-        if [[ "$line" =~ DOMAIN-SUFFIX,(.*) ]]; then
-            # 处理 DOMAIN-SUFFIX
-            domain_suffix="${BASH_REMATCH[1]}"
-            jq --arg domain_suffix "$domain_suffix" '.rules[0].domain_suffix += [$domain_suffix]' "${base_name}_domain.json" > "temp_${base_name}_domain.json" && mv "temp_${base_name}_domain.json" "${base_name}_domain.json"
-        elif [[ "$line" =~ DOMAIN-KEYWORD,(.*) ]]; then
-            # 处理 DOMAIN-KEYWORD
-            domain_keyword="${BASH_REMATCH[1]}"
-            jq --arg domain_keyword "$domain_keyword" '.rules[0].domain_keyword += [$domain_keyword]' "${base_name}_domain.json" > "temp_${base_name}_domain.json" && mv "temp_${base_name}_domain.json" "${base_name}_domain.json"
-        elif [[ "$line" =~ DOMAIN,(.*) ]]; then
-            # 处理 DOMAIN
-            domain="${BASH_REMATCH[1]}"
-            jq --arg domain "$domain" '.rules[0].domain += [$domain]' "${base_name}_domain.json" > "temp_${base_name}_domain.json" && mv "temp_${base_name}_domain.json" "${base_name}_domain.json"
-        fi
-    done < "$yaml_file"
+    # 检查文件是否含有域名相关规则
+    if grep -qE 'DOMAIN(-SUFFIX|-KEYWORD)?,|DOMAIN,' "$yaml_file"; then
+        # 初始化JSON文件内容
+        echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\n      \"domain_suffix\": [],\n      \"domain_keyword\": [],\n      \"domain\": []\n    }\n  ]\n}" > "${base_name}_domain.json"
+        
+        # 使用jq仅一次处理所有规则
+        jq --argfile rules <(grep -E 'DOMAIN(-SUFFIX|-KEYWORD)?,|DOMAIN,' "$yaml_file" | \
+          awk -F, '/DOMAIN-SUFFIX/{print "\"domain_suffix\": \"" $2 "\""}
+                   /DOMAIN-KEYWORD/{print "\"domain_keyword\": \"" $2 "\""}
+                   /DOMAIN,/{print "\"domain\": \"" $2 "\""}' | \
+          jq -s -R 'split("\n")[:-1] | map(split(": ")) | map({(.[0]): .[1]}) | add' | \
+          jq '{version: 1, rules: [.]}') "${base_name}_domain.json" > "$temp_json" && mv "$temp_json" "${base_name}_domain.json"
+    fi
 
     # 生成针对 Android 包名和进程名的 JSON
     grep -E 'PROCESS-NAME' "$yaml_file" | grep -v '#' | sed 's/  - PROCESS-NAME,//g' > temp.json
