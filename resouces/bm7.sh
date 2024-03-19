@@ -36,13 +36,11 @@ for yaml_file in "$rule_dir"/*.yaml; do
 
     # 检查文件是否包含域名相关规则
     if grep -qE 'DOMAIN(-SUFFIX|-KEYWORD)?,|DOMAIN,' "$yaml_file"; then
-        echo "Processing domain rules for $yaml_file..."
         # 之前讨论的处理域名规则的逻辑
     fi
 
     # 生成针对 Android 包名和进程名的 JSON
     if grep -q 'PROCESS-NAME,' "$yaml_file"; then
-        echo "Processing process-name rules for $yaml_file..."
         grep -E 'PROCESS-NAME' "$yaml_file" | grep -v '#' | sed 's/  - PROCESS-NAME,//g' > temp_process.json
         if [ -s temp_process.json ]; then
             echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\"process_name\": [" > "${base_name}_process.json"
@@ -54,7 +52,6 @@ for yaml_file in "$rule_dir"/*.yaml; do
 
     # 生成针对 IP CIDR 的 JSON
     if grep -q 'IP-CIDR,' "$yaml_file"; then
-        echo "Processing IP-CIDR rules for $yaml_file..."
         grep 'IP-CIDR,' "$yaml_file" | grep -v '#' | sed 's/  - IP-CIDR,//g' > temp_ipcidr.json
         if [ -s temp_ipcidr.json ]; then
             echo -e "{\n  \"version\": 1,\n  \"rules\": [\n    {\"ip_cidr\": [" > "${base_name}_ipcidr.json"
