@@ -18,6 +18,11 @@ jobs:
           echo "BUILDTIME=$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M')" >> $GITHUB_ENV
         shell: bash
 
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: Astlm/meta-rules-dat
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
