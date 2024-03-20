@@ -106,5 +106,10 @@ for ((i = 0; i < ${#list[@]}; i++)); do
 		sed -i '1s/^/      "ip_cidr": [\n/g' ${list[i]}/ipcidr.json
 		sed -i '$ s/,$/\n      ],/g' ${list[i]}/ipcidr.json
 	fi
-
+    # 合并文件
+	if [ -f "${list[i]}/package.json" -a -f "${list[i]}/process.json" ]; then
+		sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/package.json
+		cat ${list[i]}/process.json >> ${list[i]}/package.json
+		rm ${list[i]}/process.json
+	fi
 done
