@@ -118,7 +118,7 @@ for ((i = 0; i < ${#list[@]}; i++)); do
 		mv ${list[i]}/process.json ${list[i]}/pack_process.json
 	fi
 	
-	if [ -f "${list[i]}/domain.json" -a -f "${list[i]}/suffix.json" -f "${list[i]}/keyword.json" ]; then
+	if [ -f "${list[i]}/domain.json" -a -f "${list[i]}/suffix.json" -a -f "${list[i]}/keyword.json" ]; then
 		sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/domain.json
 		cat ${list[i]}/suffix.json >> ${list[i]}/domain.json
 		sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/domain.json
