@@ -106,10 +106,46 @@ for ((i = 0; i < ${#list[@]}; i++)); do
 		sed -i '1s/^/      "ip_cidr": [\n/g' ${list[i]}/ipcidr.json
 		sed -i '$ s/,$/\n      ],/g' ${list[i]}/ipcidr.json
 	fi
-    # 合并文件
+   # 处理规则文件
 	if [ -f "${list[i]}/package.json" -a -f "${list[i]}/process.json" ]; then
-		sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/package.json
-		cat ${list[i]}/process.json >> ${list[i]}/package.json
+		mv ${list[i]}/package.json ${list[i]}/pack_process.json
+		sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/pack_process.json
+		cat ${list[i]}/process.json >> ${list[i]}/pack_process.json
 		rm ${list[i]}/process.json
+	elif [ -f "${list[i]}/package.json" ]; then
+		mv ${list[i]}/package.json ${list[i]}/pack_process.json
+	elif [ -f "${list[i]}/process.json" ]; then
+		mv ${list[i]}/process.json ${list[i]}/pack_process.json
 	fi
+	
+	if [ -f "${list[i]}/domain.json" -a -f "${list[i]}/suffix.json" -f "${list[i]}/keyword.json" ]; then
+		sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/domain.json
+		cat ${list[i]}/suffix.json >> ${list[i]}/domain.json
+		sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/domain.json
+		cat ${list[i]}/keyword.json >> ${list[i]}/domain.json
+		rm ${list[i]}/suffix.json
+		rm ${list[i]}/keyword.json
+	elif [ -f "${list[i]}/suffix.json" ]; then
+		mv ${list[i]}/suffix.json ${list[i]}/domain.json
+	elif [ -f "${list[i]}/keyword.json" ]; then
+		mv ${list[i]}/keyword.json ${list[i]}/domain.json
+    elif [ -f "${list[i]}/domain.json" -a -f "${list[i]}/suffix.json" -f ]; then
+        sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/domain.json
+		cat ${list[i]}/suffix.json >> ${list[i]}/domain.json
+		rm ${list[i]}/suffix.json
+	elif [ -f "${list[i]}/domain.json" -a -f "${list[i]}/keyword.json" -f ]; then
+	    sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/domain.json
+	    cat ${list[i]}/keyword.json >> ${list[i]}/domain.json
+	    rm ${list[i]}/keyword.json
+	elif [ -f "${list[i]}/suffix.json" -a -f "${list[i]}/keyword.json" -f ]; then
+	    mv ${list[i]}/suffix.json ${list[i]}/domain.json
+	    sed -i '$ s/,$/\n    },\n    {/g' ${list[i]}/domain.json
+	    cat ${list[i]}/keyword.json >> ${list[i]}/domain.json
+	    rm ${list[i]}/keyword.json
+	fi
+
+sed -i '1s/^/{\n  "version": 1,\n  "rules": [\n    {\n/g' ${list[i]}/*.json
+sed -i '$ s/,$/\n    }\n  ]\n}/g' ${list[i]}/*.json
+./sing-box rule-set compile ${list[i]}/*.json -o ${list[i]}/*.srs
+
 done
