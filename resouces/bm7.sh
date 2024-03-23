@@ -146,8 +146,13 @@ for ((i = 0; i < ${#list[@]}; i++)); do
 
 sed -i '1s/^/{\n  "version": 1,\n  "rules": [\n    {\n/g' ${list[i]}/*.json
 sed -i '$ s/,$/\n    }\n  ]\n}/g' ${list[i]}/*.json
-./sing-box rule-set compile ${list[i]}/domain.json -o ${list[i]}/domain.srs
-./sing-box rule-set compile ${list[i]}/ipcidr.json -o ${list[i]}/ipcidr.srs
-./sing-box rule-set compile ${list[i]}/pack_process.json -o ${list[i]}/pack_process.srs
+
+    if [ -f "${list[i]}/domain.json" ]; then
+        ./sing-box rule-set compile ${list[i]}/domain.json -o ${list[i]}/domain.srs
+    elif [ -f "${list[i]}/ipcidr.json" ]; then
+        ./sing-box rule-set compile ${list[i]}/ipcidr.json -o ${list[i]}/ipcidr.srs
+    elif [ -f "${list[i]}/pack_process.json" ]; then
+        ./sing-box rule-set compile ${list[i]}/pack_process.json -o ${list[i]}/pack_process.srs
+    fi
 
 done
