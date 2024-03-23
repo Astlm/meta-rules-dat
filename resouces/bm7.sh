@@ -149,9 +149,11 @@ sed -i '$ s/,$/\n    }\n  ]\n}/g' ${list[i]}/*.json
 
     if [ -f "${list[i]}/domain.json" ]; then
         ./sing-box rule-set compile ${list[i]}/domain.json -o ${list[i]}/domain.srs
-    elif [ -f "${list[i]}/ipcidr.json" ]; then
+    fi
+    if [ -f "${list[i]}/ipcidr.json" ]; then
         ./sing-box rule-set compile ${list[i]}/ipcidr.json -o ${list[i]}/ipcidr.srs
-    elif [ -f "${list[i]}/pack_process.json" ]; then
+    fi
+    if [ -f "${list[i]}/pack_process.json" ]; then
         ./sing-box rule-set compile ${list[i]}/pack_process.json -o ${list[i]}/pack_process.srs
     fi
 
