@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "package_name": [
+        "nekox.messenger",
+        "org.telegram.messenger"
+      ]
+    },
+    {
+      "process_name": [
+        "telegram-desktop",
+        "Telegram.exe"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "package_name": [
+        "com.xiaomi.mibrain.speech"
+      ]
+    },
+    {
+      "process_name": [
+        "小米云服务.exe"
+      ]
+    }
+  ]
+}
