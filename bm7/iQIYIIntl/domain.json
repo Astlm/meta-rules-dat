@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".inter.iqiyi.com",
+        ".intl-rcd.iqiyi.com",
+        ".intl-subscription.iqiyi.com",
+        ".intl.iqiyi.com",
+        ".iq.com"
+      ]
+    }
+  ]
+}
