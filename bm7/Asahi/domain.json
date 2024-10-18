@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".aiasahi.jp",
+        ".asagaku.com",
+        ".asahi.com",
+        ".asahicom.jp",
+        ".asakonet.co.jp",
+        ".nikkansports.com"
+      ]
+    }
+  ]
+}
