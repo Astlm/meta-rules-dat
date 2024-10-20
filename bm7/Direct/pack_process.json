@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "package_name": [
+        "Motrix.app"
+      ]
+    },
+    {
+      "process_name": [
+        "BaiduNetdisk_mac",
+        "BitComet",
+        "ClashX",
+        "DownloadService",
+        "Folx",
+        "LogiOptions",
+        "LogiOptionsDaemon",
+        "NetTransport",
+        "SunloginClient_Desktop",
+        "SunloginClient_Helper",
+        "Thunder",
+        "ThunderVIP",
+        "Transmission",
+        "UUBooster",
+        "WebTorrent",
+        "WebTorrentHelper",
+        "amuled",
+        "aria2c",
+        "clash",
+        "cloudflared",
+        "fdm",
+        "parsecd",
+        "privoxy",
+        "qBittorrent",
+        "qbittorrent*",
+        "qbittorrent-nox",
+        "ss-local",
+        "tailscaled",
+        "transmission-daemon",
+        "transmission-qt",
+        "trojan",
+        "trojan-go",
+        "uTorrent",
+        "v2ray",
+        "xray"
+      ]
+    }
+  ]
+}
