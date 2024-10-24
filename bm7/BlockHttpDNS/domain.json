@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".httpdns.baidu.com",
+        ".httpdns.baidubce.com",
+        ".httpsdns.baidu.com"
+      ]
+    }
+  ]
+}

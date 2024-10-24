@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "package_name": [
+        "com.cbs.app",
+        "com.showtime.standalone"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".cbsaavideo.com",
+        ".cbsi.com",
+        ".cbsivideo.com",
+        ".paramountplus.com",
+        ".pplusstatic.com"
+      ]
+    }
+  ]
+}

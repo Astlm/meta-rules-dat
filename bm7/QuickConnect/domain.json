@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".download.synology.com",
+        ".quickconnect.com",
+        ".quickconnect.to"
+      ]
+    }
+  ]
+}
