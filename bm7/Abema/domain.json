@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".abema-tv.com",
+        ".abema.io",
+        ".abema.tv",
+        ".adx.promo",
+        ".ameba.jp",
+        ".amebame.com",
+        ".amebaownd.com",
+        ".amebaowndme.com",
+        ".ameblo.jp",
+        ".bucketeer.jp",
+        ".dokusho-ojikan.jp",
+        ".hayabusa.dev",
+        ".hayabusa.io",
+        ".hayabusa.media",
+        ".winticket.jp"
+      ]
+    }
+  ]
+}

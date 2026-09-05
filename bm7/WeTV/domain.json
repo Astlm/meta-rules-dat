@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".iflix-images.akamaized.net",
+        ".iflix.com",
+        ".vv.video.qq.com",
+        ".wetv.vip",
+        ".wetvinfo.com"
+      ]
+    }
+  ]
+}

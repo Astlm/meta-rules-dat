@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".bb-static.com",
+        ".bbc.co.uk",
+        ".britbox.co.uk",
+        ".britbox.com",
+        ".itv.com",
+        ".massive-itv.com"
+      ]
+    }
+  ]
+}
