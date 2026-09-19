@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".fontstar.com.cn",
+        ".fontstudio.cn",
+        ".hanyi.com",
+        ".hanyi.com.cn",
+        ".hellowebfont.com",
+        ".ifont.cn",
+        ".joytype.com"
+      ]
+    }
+  ]
+}

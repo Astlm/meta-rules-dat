@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "package_name": [
+        "com.apple.Maps",
+        "com.apple.geod"
+      ]
+    },
+    {
+      "process_name": [
+        "CoreLocationAgent",
+        "WeatherWidget",
+        "apsd",
+        "findmydevice-user-agent",
+        "fmfd",
+        "mapspushd",
+        "netbiosd",
+        "trustd",
+        "Music",
+        "LookupViewService",
+        "TV"
+      ]
+    }
+  ]
+}
