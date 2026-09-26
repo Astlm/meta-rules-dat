@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "package_name": [
+        "com.iqiyi.i18n",
+        "com.iqiyi.i18n.tv"
+      ]
+    }
+  ]
+}

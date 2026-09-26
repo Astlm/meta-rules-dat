@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".rthk.hk",
+        ".rthk.org.hk"
+      ]
+    }
+  ]
+}
