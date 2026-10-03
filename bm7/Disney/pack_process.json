@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "package_name": [
+        "com.disney.datg.videoplatforms.android.abc",
+        "com.disney.disneyplus"
+      ]
+    }
+  ]
+}
