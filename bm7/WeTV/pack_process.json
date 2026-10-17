@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "package_name": [
+        "com.tencent.qqlivei18n",
+        "com.tencent.qqlivei18n.us"
+      ]
+    }
+  ]
+}
