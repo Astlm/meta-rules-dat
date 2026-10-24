@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".channel5.com",
+        ".my5.tv"
+      ]
+    }
+  ]
+}
