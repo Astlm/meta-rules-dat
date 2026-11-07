@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "package_name": [
+        "com.taobao.taobao",
+        "com.bilibili.app.blue",
+        "com.bilibili.app.in",
+        "com.bilibili.comic",
+        "com.bilibili.comic.intl",
+        "tv.danmaku.bili",
+        "tv.danmaku.bilibilihd",
+        "com.zhiliaoapp.musically",
+        "com.jjwxc.reader",
+        "com.xiaomi.mibrain.speech",
+        "com.qiyi.video"
+      ]
+    },
+    {
+      "process_name": [
+        "Thunder",
+        "小米云服务.exe",
+        "Thunder.exe"
+      ]
+    }
+  ]
+}
