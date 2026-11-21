@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".pgdt.gtimg.cn",
+        ".qqvideo.gtimg.com",
+        ".v.qq.com",
+        ".v.smtcdns.com",
+        ".video.qq.com"
+      ]
+    }
+  ]
+}

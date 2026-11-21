@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".teams.cdn.live.net",
+        ".teams.live.com",
+        ".teams.microsoft.com"
+      ]
+    }
+  ]
+}

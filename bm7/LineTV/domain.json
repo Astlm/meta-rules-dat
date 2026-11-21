@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".chocotv.com.tw",
+        ".d3c7rimkq79yfu.cloudfront.net",
+        ".line-cdn.net",
+        ".line-scdn.net",
+        ".linetv.tw"
+      ]
+    }
+  ]
+}
