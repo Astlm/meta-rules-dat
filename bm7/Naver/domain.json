@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "domain_suffix": [
+        ".chocotv.com.tw",
+        ".grafolio.com",
+        ".lin.ee",
+        ".line-apps-beta.com",
+        ".line-apps.com",
+        ".line-beta.me",
+        ".line-cdn.net",
+        ".line-scdn.net",
+        ".line.me",
+        ".linecorp.com",
+        ".linefriends.com",
+        ".linefriends.com.tw",
+        ".linegame.jp",
+        ".linemobile.com",
+        ".linetv.tw",
+        ".naver.com",
+        ".naver.jp",
+        ".naver.net",
+        ".navercorp.com",
+        ".nhncorp.jp",
+        ".plug.game",
+        ".pstatic.net",
+        ".smartmediarep.com",
+        ".webtoons.com"
+      ]
+    }
+  ]
+}
